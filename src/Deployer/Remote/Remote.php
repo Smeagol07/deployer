@@ -26,7 +26,7 @@ class Remote implements RemoteInterface
     {
         $this->server = $server;
         $this->user = $user;
-        $this->sftp = new \Net_SFTP($server);
+        $this->sftp = new \Net_SFTP($this->getServerHost(), $this->getServerPort());
 
         if ($password instanceof Key) {
             $password = $password->key();
@@ -64,9 +64,29 @@ class Remote implements RemoteInterface
      * download file from remote in current directory
      * @param type $from
      * @param type $to
+     * @return mixed;
      */
     public function downloadFile($from, $to)
     {
         return $this->sftp->get($from, $to);
+    }
+
+    protected function getServerHost() {
+        $serverParams = explode(':', $this->server);
+        return $serverParams[0];
+    }
+
+    protected function getServerPort() {
+        $serverParams = explode(':', $this->server);
+        return isset($serverParams[1]) ? $serverParams[1] : 22;
+    }
+
+    protected function getUser() {
+        return $this->user;
+    }
+
+    public function uploadDir($from, $to)
+    {
+        // TODO: Implement uploadDir() method.
     }
 }

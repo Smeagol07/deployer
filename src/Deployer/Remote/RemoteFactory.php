@@ -11,6 +11,11 @@ class RemoteFactory
 {
     public function create($server, $user, $password)
     {
+        //check if rsync is available
+        exec('rsync --version', $output, $return);
+        if ($return === 0) {
+            return new Rsync($server, $user, $password);
+        }
         return new Remote($server, $user, $password);
     }
 } 

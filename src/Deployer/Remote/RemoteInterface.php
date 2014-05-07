@@ -12,4 +12,5 @@ interface RemoteInterface
     public function cd($directory);
     public function execute($command);
     public function uploadFile($from, $to);
-} 
+    public function uploadDir($from, $to);
+}

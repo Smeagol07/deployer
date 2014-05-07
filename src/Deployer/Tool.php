@@ -130,8 +130,31 @@ class Tool
         $this->ignore = $ignore;
     }
 
+    public function rsync($local, $remote) {
+        $this->checkConnected();
+
+        $local = Path::normalize(realpath($local));
+
+        if (is_file($local) && is_readable($local)) {
+            $this->writeln("Uploading file <info>$local</info> to <info>$remote</info> using rsync");
+            $this->remote->uploadFile($local, $remote);
+        } else if (is_dir($local)) {
+            $this->writeln("Uploading from <info>$local</info> to <info>$remote</info> using rsync:");
+            $this->remote->setIgnoreList($this->ignore);
+            $this->remote->uploadDir($local, $remote);
+        } else {
+            throw new \RuntimeException("Uploading path '$local' does not exist.");
+        }
+    }
+
     public function upload($local, $remote)
     {
+        //check if rsync is available
+        exec('rsync --version', $output, $return);
+        if ($return === 0) {
+            return $this->rsync($local, $remote);
+        }
+
         $this->checkConnected();
 
         $local = Path::normalize(realpath($local));

@@ -1,5 +1,6 @@
 vendor/
 deployer.phar
+composer.lock
 pages/
 .idea/
 /nbproject/
