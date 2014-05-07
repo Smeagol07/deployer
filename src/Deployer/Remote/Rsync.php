@@ -23,13 +23,13 @@ class Rsync extends SSHRemote {
         $cmd = sprintf($this->getCommand(),
             $this->getServerPort(), $from, $this->getUser(), $this->getServerHost(), $to
         );
-        $this->exec($cmd);
+$this->exec($cmd);
     }
 
     public function uploadDir($from, $to) {
         $this->prepareDirName($from);
         $this->prepareDirName($to);
-        $cmd = sprintf($this->getCommand(),
+        $cmd = sprintf($this->getCommand() . $this->getExclude($from),
             $this->getServerPort(), $from, $this->getUser(), $this->getServerHost(), $to
         );
         $this->exec($cmd);
@@ -43,13 +43,13 @@ class Rsync extends SSHRemote {
     }
 
     protected function getCommand() {
-        return "rsync -ar --info=progress2 -e 'ssh -p %s' '%s' '%s@%s:%s' " . $this->getExclude();
+        return "rsync -ar --info=progress2 -e 'ssh -p %s' '%s' '%s@%s:%s'";
     }
 
-    protected function getExclude() {
+    protected function getExclude($baseDir) {
         $result = '';
         foreach($this->ignoreList as $ignore) {
-            $result .= sprintf("--exclude '%s' ", $ignore);
+            $result .= sprintf(" --exclude '%s'", str_replace($baseDir,'', $ignore));
         }
         return $result;
     }
